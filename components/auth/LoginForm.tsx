@@ -1,23 +1,38 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { User, IdCard, Mail, Lock, RotateCcw, ChevronDown, ArrowRight, Loader2 } from 'lucide-react';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  User,
+  IdCard,
+  Mail,
+  Lock,
+  RotateCcw,
+  ChevronDown,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [role, setRole] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
+    setErrorMsg("");
 
-    // Validasi sederhana: Cek jika input email dan password kosong
+    // Validasi sederhana: Cek jika input email, password, dan role kosong
+    if (!role) {
+      setErrorMsg("Pilih role admin atau kasir sebelum login.");
+      return;
+    }
+
     if (!email.trim() || !password.trim()) {
-      setErrorMsg('Email dan Password wajib diisi sebelum login!');
+      setErrorMsg("Email dan Password wajib diisi sebelum login!");
       return;
     }
 
@@ -25,10 +40,10 @@ export default function LoginForm() {
 
     try {
       // Melakukan request HTTP POST ke endpoint backend
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -37,16 +52,15 @@ export default function LoginForm() {
 
       if (!response.ok) {
         // Tampilkan pesan error langsung dari backend API
-        setErrorMsg(data.message || 'Gagal masuk. Silakan coba lagi.');
+        setErrorMsg(data.message || "Gagal masuk. Silakan coba lagi.");
         setIsLoading(false);
         return;
       }
 
-      // Jika berhasil, alihkan ke hal dashboard, tidak perlu kembalikan "isLoading" 
-      // ke false agar layar tidak flashing saat routing berpindah.
-      router.push('/dashboard');
+      // Jika berhasil, alihkan ke route berdasarkan role.
+      router.push(role === "kasir" ? "/kasir" : "/admin");
     } catch (error) {
-      setErrorMsg('Koneksi ke server terputus. Cek intenet Anda.');
+      setErrorMsg("Koneksi ke server terputus. Cek intenet Anda.");
       setIsLoading(false);
     }
   };
@@ -54,9 +68,12 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-[420px] bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 flex flex-col items-center z-10">
       {/* Header */}
-      <h1 className="text-[26px] font-bold text-slate-800 mb-2 tracking-tight">LOGIN</h1>
+      <h1 className="text-[26px] font-bold text-slate-800 mb-2 tracking-tight">
+        LOGIN
+      </h1>
       <p className="text-[12px] text-slate-500 text-center leading-relaxed px-4 mb-4 w-[90%]">
-        Login admin atau kasir baru untuk mulai mengakses sistem operasional POS.
+        Login admin atau kasir baru untuk mulai mengakses sistem operasional
+        POS.
       </p>
 
       {/* Pesan Error (Toast Sederhana) */}
@@ -94,9 +111,14 @@ export default function LoginForm() {
               <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
               <select
                 className="w-full bg-[#f1f5f9] h-10 rounded-md pl-9 pr-8 text-[12px] text-slate-800 appearance-none focus:outline-none focus:ring-2 focus:ring-[#00a663] transition-all font-medium border-none cursor-pointer"
-                defaultValue=""
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
               >
-                <option value="" disabled className="text-[11px] text-slate-400">
+                <option
+                  value=""
+                  disabled
+                  className="text-[11px] text-slate-400"
+                >
                   Pilih role
                 </option>
                 <option value="admin">Admin</option>
@@ -182,7 +204,8 @@ export default function LoginForm() {
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin text-white" /> MEMPROSES...
+              <Loader2 className="w-4 h-4 animate-spin text-white" />{" "}
+              MEMPROSES...
             </>
           ) : (
             <>
