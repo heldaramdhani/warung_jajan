@@ -24,14 +24,16 @@ export async function GET() {
       success: true,
       message: 'Berhasil terhubung ke database!',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Database connection error:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     return NextResponse.json(
       {
         success: false,
         message: 'Gagal terhubung ke database.',
-        error: error.message,
+        error: errorMessage,
       },
       { status: 500 }
     );
