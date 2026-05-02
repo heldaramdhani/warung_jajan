@@ -10,17 +10,30 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model users {
-  id         BigInt    @id @default(autoincrement())
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   nama       String    @db.VarChar
   email      String    @unique @db.VarChar
   password   String
-  role       String    @default("kasir") @db.VarChar
+  role       String    @db.VarChar
   created_at DateTime? @default(now()) @db.Timestamptz(6)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model kategori {
-  id            Int       @id @default(autoincrement())
+  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   nama_kategori String    @unique @db.VarChar
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  produk        produk[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model produk {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  nama_produk String    @db.VarChar
+  harga       Int
+  stok        Int
+  gambar_url  String?
+  kategori_id String?   @db.Uuid
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  kategori    kategori? @relation(fields: [kategori_id], references: [id], onUpdate: NoAction)
 }

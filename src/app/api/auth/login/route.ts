@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     // Buat JWT token
     const secret = new TextEncoder().encode(JWT_SECRET);
     const token = await new SignJWT({
-      id: user.id.toString(),
+      id: user.id,
       email: user.email,
       role: user.role,
     })
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
         success: true,
         message: "Login berhasil!",
         data: {
-          id: user.id.toString(),
+          id: user.id,
           name: user.nama,
           email: user.email,
           role: user.role,
