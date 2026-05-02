@@ -12,7 +12,7 @@ import prisma from '@/lib/prisma';
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: ID kategori
  *     responses:
  *       200:
@@ -29,8 +29,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt((await params).id, 10);
-    if (isNaN(id)) {
+    const id = (await params).id;
+    if (!id) {
       return NextResponse.json({ success: false, message: 'Invalid ID' }, { status: 400 });
     }
 
@@ -59,7 +59,7 @@ export async function GET(
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: ID kategori
  *     requestBody:
  *       required: true
@@ -90,8 +90,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt((await params).id, 10);
-    if (isNaN(id)) {
+    const id = (await params).id;
+    if (!id) {
       return NextResponse.json({ success: false, message: 'Invalid ID' }, { status: 400 });
     }
 
@@ -136,7 +136,7 @@ export async function PUT(
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: ID kategori
  *     responses:
  *       200:
@@ -153,8 +153,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt((await params).id, 10);
-    if (isNaN(id)) {
+    const id = (await params).id;
+    if (!id) {
       return NextResponse.json({ success: false, message: 'Invalid ID' }, { status: 400 });
     }
 
