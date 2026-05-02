@@ -1,8 +1,9 @@
 'use client';
 
-import SwaggerUI from 'swagger-ui-react';
-
+import dynamic from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css';
+
+const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
