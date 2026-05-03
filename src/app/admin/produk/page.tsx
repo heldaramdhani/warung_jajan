@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Search, ListFilter, Filter, ChevronDown } from 'lucide-react';
-import { ProductTable, Product } from '@/components/admin/ProductTable';
-import { Modal } from '@/ui/Modal';
-import { Input } from '@/ui/Input';
+import { Plus, Search, ChevronDown } from 'lucide-react';
+import { ProductTable, Product } from '@/components/admin/produk/ProductTable';
+import { ProductModals } from '@/components/admin/produk/ProductModals';
+import { ProductStats } from '@/components/admin/produk/ProductStats';
+import { Button } from '@/ui/Button';
 
 const initialProducts: Product[] = [
   {
@@ -148,54 +149,31 @@ export default function ProdukPage() {
     setSelectedProduct(null);
   };
 
+  const filterSelectClass = "appearance-none px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-[#0f9d58]";
+  const filterSelectStyle = { 
+    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2394a3b8\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', 
+    backgroundPosition: 'right 12px center', 
+    backgroundRepeat: 'no-repeat', 
+    backgroundSize: '16px', 
+    paddingRight: '40px' 
+  };
+
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto pb-8 relative">
+    <div className="flex flex-col gap-4 w-full pb-8 relative">
       {/* Top Action Row */}
       <div className="flex justify-end">
-        <button 
+        <Button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-[#0f9d58] hover:bg-[#0b8043] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          variant="primary"
+          className="gap-2"
         >
           <Plus size={18} />
           Tambah Produk
-        </button>
+        </Button>
       </div>
 
       {/* Stats Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col justify-between">
-          <h3 className="text-sm font-medium text-slate-400 mb-2">Total Produk</h3>
-          <div>
-            <div className="text-3xl font-bold text-slate-800 mb-1">{productsList.length}</div>
-            <div className="text-xs text-slate-400">12 kategori aktif</div>
-          </div>
-        </div>
-        {/* Card 2 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col justify-between">
-          <h3 className="text-sm font-medium text-slate-400 mb-2">Kategori Terbanyak</h3>
-          <div>
-            <div className="text-3xl font-bold text-slate-800 mb-1">Minuman</div>
-            <div className="text-xs text-slate-400">36 item terdaftar</div>
-          </div>
-        </div>
-        {/* Card 3 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col justify-between">
-          <h3 className="text-sm font-medium text-slate-400 mb-2">Stok Menipis</h3>
-          <div>
-            <div className="text-3xl font-bold text-slate-800 mb-1">9 Item</div>
-            <div className="text-xs text-slate-400">Perlu restock hari ini</div>
-          </div>
-        </div>
-        {/* Card 4 */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 flex flex-col justify-between">
-          <h3 className="text-sm font-medium text-slate-400 mb-2">Update Terakhir</h3>
-          <div>
-            <div className="text-3xl font-bold text-slate-800 mb-1">09:24</div>
-            <div className="text-xs text-slate-400">Sinkronisasi harga gudang</div>
-          </div>
-        </div>
-      </div>
+      <ProductStats totalProducts={productsList.length} />
 
       {/* Search & Filter Row */}
       <div className="flex flex-col md:flex-row gap-4 relative z-10">
@@ -215,8 +193,8 @@ export default function ProdukPage() {
           <select 
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="appearance-none px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-[#0f9d58]"
-            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2394a3b8\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundPosition: 'right 12px center', backgroundRepeat: 'no-repeat', backgroundSize: '16px', paddingRight: '40px' }}
+            className={filterSelectClass}
+            style={filterSelectStyle}
           >
             <option value="Semua kategori">Semua kategori</option>
             <option value="Makanan">Makanan</option>
@@ -225,8 +203,8 @@ export default function ProdukPage() {
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-[#0f9d58]"
-            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2394a3b8\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundPosition: 'right 12px center', backgroundRepeat: 'no-repeat', backgroundSize: '16px', paddingRight: '40px' }}
+            className={filterSelectClass}
+            style={filterSelectStyle}
           >
             <option value="Semua status">Semua status</option>
             <option value="Aman">Stok Aman</option>
@@ -244,195 +222,22 @@ export default function ProdukPage() {
         onDelete={handleDelete}
       />
 
-      {/* Add Product Modal */}
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)}
-        title="Tambah Produk Baru"
-      >
-        <div className="flex flex-col gap-4">
-          <Input 
-            label="Nama Produk" 
-            value={addForm.name}
-            onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
-            placeholder="Contoh: Dimsum Siomay" 
-          />
-          <Input 
-            label="Deskripsi Singkat" 
-            value={addForm.description}
-            onChange={(e) => setAddForm({ ...addForm, description: e.target.value })}
-            placeholder="Contoh: 6 pcs • Siap jual" 
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-slate-700">Kategori</label>
-              <select 
-                value={addForm.category}
-                onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f9d58]"
-              >
-                <option value="Makanan">Makanan</option>
-                <option value="Minuman">Minuman</option>
-              </select>
-            </div>
-            <Input 
-              label="Stok Awal" 
-              type="number" 
-              value={addForm.stock}
-              onChange={(e) => setAddForm({ ...addForm, stock: e.target.value })}
-              placeholder="0" 
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Input 
-              label="Harga Beli" 
-              type="number" 
-              value={addForm.purchasePrice}
-              onChange={(e) => setAddForm({ ...addForm, purchasePrice: e.target.value })}
-              placeholder="Rp 0" 
-            />
-            <Input 
-              label="Harga Jual" 
-              type="number" 
-              value={addForm.sellingPrice}
-              onChange={(e) => setAddForm({ ...addForm, sellingPrice: e.target.value })}
-              placeholder="Rp 0" 
-            />
-          </div>
-          
-          <div className="flex justify-end gap-3 mt-4">
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-            >
-              Batal
-            </button>
-            <button 
-              onClick={submitAddProduct}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#0f9d58] text-white hover:bg-[#0b8043] transition-colors"
-            >
-              Simpan Produk
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Edit Product Modal */}
-      <Modal 
-        isOpen={isEditModalOpen} 
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedProduct(null);
-        }}
-        title="Edit Produk"
-      >
-        {selectedProduct && (
-          <div className="flex flex-col gap-4">
-            <Input 
-              label="Nama Produk" 
-              value={selectedProduct.name}
-              onChange={(e) => setSelectedProduct({ ...selectedProduct, name: e.target.value })}
-              placeholder="Contoh: Dimsum Siomay" 
-            />
-            <Input 
-              label="Deskripsi Singkat" 
-              value={selectedProduct.description}
-              onChange={(e) => setSelectedProduct({ ...selectedProduct, description: e.target.value })}
-              placeholder="Contoh: 6 pcs • Siap jual" 
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">Kategori</label>
-                <select 
-                  value={selectedProduct.category}
-                  onChange={(e) => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#fbbc04]"
-                >
-                  <option value="Makanan">Makanan</option>
-                  <option value="Minuman">Minuman</option>
-                </select>
-              </div>
-              <Input 
-                label="Stok" 
-                type="number" 
-                value={selectedProduct.stock}
-                onChange={(e) => setSelectedProduct({ ...selectedProduct, stock: parseInt(e.target.value) || 0, stockStatus: getStockStatus(parseInt(e.target.value) || 0) })}
-                placeholder="0" 
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Input 
-                label="Harga Beli" 
-                type="text" 
-                value={selectedProduct.purchasePrice.replace('Rp ', '').replace('.', '')}
-                onChange={(e) => setSelectedProduct({ ...selectedProduct, purchasePrice: `Rp ${e.target.value}` })}
-                placeholder="0" 
-              />
-              <Input 
-                label="Harga Jual" 
-                type="text" 
-                value={selectedProduct.sellingPrice.replace('Rp ', '').replace('.', '')}
-                onChange={(e) => setSelectedProduct({ ...selectedProduct, sellingPrice: `Rp ${e.target.value}` })}
-                placeholder="0" 
-              />
-            </div>
-            
-            <div className="flex justify-end gap-3 mt-4">
-              <button 
-                onClick={() => {
-                  setIsEditModalOpen(false);
-                  setSelectedProduct(null);
-                }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button 
-                onClick={submitEditProduct}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#fbbc04] text-white hover:bg-yellow-500 transition-colors"
-              >
-                Simpan Perubahan
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
-
-      {/* Delete Product Modal */}
-      <Modal 
-        isOpen={isDeleteModalOpen} 
-        onClose={() => {
-          setIsDeleteModalOpen(false);
-          setSelectedProduct(null);
-        }}
-        title="Hapus Produk"
-      >
-        {selectedProduct && (
-          <div className="flex flex-col gap-4">
-            <p className="text-slate-600 text-sm">
-              Apakah Anda yakin ingin menghapus produk <span className="font-bold text-slate-800">{selectedProduct.name}</span>? 
-              Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <div className="flex justify-end gap-3 mt-4">
-              <button 
-                onClick={() => {
-                  setIsDeleteModalOpen(false);
-                  setSelectedProduct(null);
-                }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button 
-                onClick={submitDeleteProduct}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
-              >
-                Hapus Produk
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      {/* All Product Modals */}
+      <ProductModals 
+        isAddOpen={isModalOpen}
+        setIsAddOpen={setIsModalOpen}
+        addForm={addForm}
+        setAddForm={setAddForm}
+        submitAddProduct={submitAddProduct}
+        isEditOpen={isEditModalOpen}
+        setIsEditOpen={setIsEditModalOpen}
+        selectedProduct={selectedProduct}
+        setSelectedProduct={setSelectedProduct}
+        submitEditProduct={submitEditProduct}
+        isDeleteOpen={isDeleteModalOpen}
+        setIsDeleteOpen={setIsDeleteModalOpen}
+        submitDeleteProduct={submitDeleteProduct}
+      />
     </div>
   );
 }
