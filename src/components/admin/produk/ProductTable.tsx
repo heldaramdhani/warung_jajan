@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Pencil, Trash2, Database } from 'lucide-react';
+import { Badge } from '@/ui/Badge';
 
 export interface Product {
   id: string;
@@ -79,13 +80,9 @@ export function ProductTable({ products = [], totalProducts = 0, onEdit, onDelet
                     <div className="text-xs text-slate-400 mt-0.5">{product.description}</div>
                   </td>
                   <td className="py-4 px-6">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      product.category.toLowerCase() === 'makanan' 
-                        ? 'bg-[#e6f4ea] text-[#0f9d58]' 
-                        : 'bg-[#e0f2fe] text-[#0284c7]'
-                    }`}>
+                    <Badge variant={product.category.toLowerCase() === 'makanan' ? 'success' : 'info'}>
                       {product.category}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="py-4 px-6 text-sm text-slate-600">{product.purchasePrice}</td>
                   <td className="py-4 px-6 text-sm text-slate-600">{product.sellingPrice}</td>

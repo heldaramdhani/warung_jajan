@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChevronDown, Package, Banknote, ReceiptText, Clock, ArrowRight } from 'lucide-react';
 import { StatCard } from '@/components/admin/StatCard';
@@ -49,7 +50,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="flex flex-col gap-4 max-w-7xl mx-auto">
+    <div className="flex flex-col gap-4 w-full">
       
       {/* Top and Middle Sections aligned with CSS Grid */}
       <div className="grid grid-cols-3 gap-4">
@@ -272,10 +273,10 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-bold text-slate-800">Transaksi Terbaru</h2>
             <p className="text-sm text-slate-400 mt-1">Mengambil data dari tabel transaksi & detail_transaksi</p>
           </div>
-          <button className="text-sm font-medium text-[#0f9d58] hover:text-[#0b8043] flex items-center gap-1">
+          <Link href="/admin/laporan" className="text-sm font-medium text-[#0f9d58] hover:text-[#0b8043] flex items-center gap-1">
             Lihat Semua
             <ArrowRight size={16} />
-          </button>
+          </Link>
         </div>
 
         <div className="overflow-x-auto">

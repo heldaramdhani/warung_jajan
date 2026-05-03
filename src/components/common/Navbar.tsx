@@ -11,6 +11,8 @@ export function Navbar() {
 
   if (pathname === '/admin/produk') {
     title = 'Manajemen Produk';
+  } else if (pathname === '/admin/laporan') {
+    title = 'Laporan Transaksi';
   } else if (pathname === '/admin') {
     title = 'Dashboard Admin';
   }
