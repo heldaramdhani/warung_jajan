@@ -15,6 +15,8 @@ export function Navbar() {
     title = 'Laporan Transaksi';
   } else if (pathname === '/admin/stok') {
     title = 'Monitoring Stok';
+  } else if (pathname === '/admin/users') {
+    title = 'Kelola User';
   } else if (pathname === '/admin') {
     title = 'Dashboard Admin';
   }
