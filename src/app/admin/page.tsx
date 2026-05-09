@@ -257,10 +257,10 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <button className="w-full py-2.5 bg-[#0f9d58] text-white rounded-xl text-sm font-medium hover:bg-[#0b8043] transition-colors flex justify-center items-center gap-2">
+            <Link href="/admin/stok" className="w-full py-2.5 bg-[#0f9d58] text-white rounded-xl text-sm font-medium hover:bg-[#0b8043] transition-colors flex justify-center items-center gap-2">
               Restok Sekarang
               <ArrowRight size={16} />
-            </button>
+            </Link>
           </div>
         </div>
 
