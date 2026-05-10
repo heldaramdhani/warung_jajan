@@ -10,9 +10,9 @@ import { Button } from '@/ui/Button';
 const initialProducts: Product[] = [
   {
     id: 'PRD-001',
-    name: 'Dimsum',
+    name: 'Dimsum Ayam',
     description: '6 pcs • Siap jual',
-    category: 'Makanan',
+    category: 'Dimsum',
     purchasePrice: 'Rp 8.000',
     sellingPrice: 'Rp 18.000',
     stock: 82,
@@ -22,7 +22,7 @@ const initialProducts: Product[] = [
     id: 'PRD-002',
     name: 'Dimsum Mentai',
     description: 'Porsi reguler • Fresh made',
-    category: 'Makanan',
+    category: 'Dimsum',
     purchasePrice: 'Rp 10.000',
     sellingPrice: 'Rp 22.000',
     stock: 24,
@@ -32,7 +32,7 @@ const initialProducts: Product[] = [
     id: 'PRD-003',
     name: 'Dimsum Mozarella',
     description: 'Ukuran medium • Frozen stock',
-    category: 'Makanan',
+    category: 'Dimsum',
     purchasePrice: 'Rp 7.500',
     sellingPrice: 'Rp 15.000',
     stock: 8,
@@ -52,7 +52,7 @@ const initialProducts: Product[] = [
     id: 'PRD-005',
     name: 'Dimsum Kuah Pedas',
     description: 'Porsi jumbo • Pedas level 3',
-    category: 'Makanan',
+    category: 'Dimsum',
     purchasePrice: 'Rp 9.500',
     sellingPrice: 'Rp 19.000',
     stock: 11,
@@ -60,7 +60,7 @@ const initialProducts: Product[] = [
   },
   {
     id: 'PRD-006',
-    name: 'Lemon Tea',
+    name: 'Teh Tarik',
     description: 'Cup 16 oz • Best seller',
     category: 'Minuman',
     purchasePrice: 'Rp 5.000',
@@ -84,7 +84,7 @@ export default function ProdukPage() {
 
   // Form states for Add Product
   const [addForm, setAddForm] = useState({
-    name: '', description: '', category: 'Makanan', stock: '', purchasePrice: '', sellingPrice: ''
+    name: '', description: '', category: 'Dimsum', stock: '', purchasePrice: '', sellingPrice: ''
   });
 
   // Filter products
@@ -131,7 +131,7 @@ export default function ProdukPage() {
     };
     setProductsList([newProduct, ...productsList]);
     setIsModalOpen(false);
-    setAddForm({ name: '', description: '', category: 'Makanan', stock: '', purchasePrice: '', sellingPrice: '' });
+    setAddForm({ name: '', description: '', category: 'Dimsum', stock: '', purchasePrice: '', sellingPrice: '' });
   };
 
   const submitEditProduct = () => {
@@ -197,7 +197,7 @@ export default function ProdukPage() {
             style={filterSelectStyle}
           >
             <option value="Semua kategori">Semua kategori</option>
-            <option value="Makanan">Makanan</option>
+            <option value="Dimsum">Dimsum</option>
             <option value="Minuman">Minuman</option>
           </select>
           <select 

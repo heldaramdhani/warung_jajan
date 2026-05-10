@@ -13,6 +13,10 @@ export function Navbar() {
     title = 'Manajemen Produk';
   } else if (pathname === '/admin/laporan') {
     title = 'Laporan Transaksi';
+  } else if (pathname === '/admin/stok') {
+    title = 'Monitoring Stok';
+  } else if (pathname === '/admin/users') {
+    title = 'Kelola User';
   } else if (pathname === '/admin') {
     title = 'Dashboard Admin';
   }

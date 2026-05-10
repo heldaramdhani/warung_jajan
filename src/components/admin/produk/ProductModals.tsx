@@ -43,9 +43,13 @@ export function ProductModals({
       <Modal 
         isOpen={isAddOpen} 
         onClose={() => setIsAddOpen(false)}
-        title="Tambah Produk Baru"
+        title={null}
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col text-slate-700">
+          <div className="text-center pb-3 border-b border-dashed border-slate-300 mb-4">
+            <h2 className="text-lg font-bold text-slate-800">Tambah Produk Baru</h2>
+          </div>
+          <div className="flex flex-col gap-4">
           <Input 
             label="Nama Produk" 
             value={addForm.name}
@@ -66,7 +70,7 @@ export function ProductModals({
                 onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f9d58]"
               >
-                <option value="Makanan">Makanan</option>
+                <option value="Dimsum">Dimsum</option>
                 <option value="Minuman">Minuman</option>
               </select>
             </div>
@@ -95,7 +99,7 @@ export function ProductModals({
             />
           </div>
           
-          <div className="flex justify-end gap-3 mt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button 
               variant="secondary"
               onClick={() => setIsAddOpen(false)}
@@ -110,6 +114,7 @@ export function ProductModals({
             </Button>
           </div>
         </div>
+      </div>
       </Modal>
 
       {/* Edit Product Modal */}
@@ -119,10 +124,14 @@ export function ProductModals({
           setIsEditOpen(false);
           setSelectedProduct(null);
         }}
-        title="Edit Produk"
+        title={null}
       >
         {selectedProduct && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col text-slate-700">
+            <div className="text-center pb-3 border-b border-dashed border-slate-300 mb-4">
+              <h2 className="text-lg font-bold text-slate-800">Edit Produk</h2>
+            </div>
+            <div className="flex flex-col gap-4">
             <Input 
               label="Nama Produk" 
               value={selectedProduct.name}
@@ -143,7 +152,7 @@ export function ProductModals({
                   onChange={(e) => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#fbbc04]"
                 >
-                  <option value="Makanan">Makanan</option>
+                  <option value="Dimsum">Dimsum</option>
                   <option value="Minuman">Minuman</option>
                 </select>
               </div>
@@ -172,7 +181,7 @@ export function ProductModals({
               />
             </div>
             
-            <div className="flex justify-end gap-3 mt-4">
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
               <Button 
                 variant="secondary"
                 onClick={() => {
@@ -190,6 +199,7 @@ export function ProductModals({
               </Button>
             </div>
           </div>
+        </div>
         )}
       </Modal>
 
@@ -200,29 +210,34 @@ export function ProductModals({
           setIsDeleteOpen(false);
           setSelectedProduct(null);
         }}
-        title="Hapus Produk"
+        title={null}
       >
         {selectedProduct && (
-          <div className="flex flex-col gap-4">
-            <p className="text-slate-600 text-sm">
-              Apakah Anda yakin ingin menghapus produk <span className="font-bold text-slate-800">{selectedProduct.name}</span>? 
-              Tindakan ini tidak dapat dibatalkan.
+          <div className="flex flex-col text-slate-700">
+            <div className="text-center pb-3 border-b border-dashed border-slate-300 mb-4">
+              <h2 className="text-lg font-bold text-red-600">Hapus Produk</h2>
+            </div>
+            <p className="text-slate-600 text-sm text-center mb-6">
+              Apakah Anda yakin ingin menghapus produk <br/>
+              <span className="font-bold text-slate-800 text-base block mt-2">📦 {selectedProduct.name}</span>
             </p>
-            <div className="flex justify-end gap-3 mt-4">
+            <div className="flex justify-center gap-3 pt-4 border-t border-slate-100">
               <Button 
                 variant="secondary"
                 onClick={() => {
                   setIsDeleteOpen(false);
                   setSelectedProduct(null);
                 }}
+                className="px-6"
               >
                 Batal
               </Button>
               <Button 
                 variant="danger"
                 onClick={submitDeleteProduct}
+                className="px-6"
               >
-                Hapus Produk
+                Ya, Hapus
               </Button>
             </div>
           </div>

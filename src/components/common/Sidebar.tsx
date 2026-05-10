@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Store, LayoutDashboard, Package, FileText, Layers, Users } from 'lucide-react';
+import { Store, LayoutDashboard, Package, FileText, Layers, Users, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -22,7 +22,7 @@ export function Sidebar() {
       <div className="h-20 flex items-center px-6">
         <div className="flex items-center gap-3">
           <Store className="text-[#0f9d58]" size={24} />
-          <span className="font-bold text-slate-800 text-lg">Admin</span>
+          <span className="font-bold text-slate-800 text-lg">DimsumKu</span>
         </div>
       </div>
 
@@ -50,11 +50,9 @@ export function Sidebar() {
 
       {/* Logout */}
       <div className="p-4 border-t border-slate-100">
-        <button className="group flex items-center gap-3 px-4 py-3 w-full text-slate-600 hover:text-red-600 hover:bg-red-50 active:bg-red-100 rounded-xl text-sm font-medium transition-colors">
-          <div className="w-8 h-8 rounded-full bg-slate-800 group-hover:bg-red-600 text-white flex items-center justify-center text-xs font-medium transition-colors">
-            N
-          </div>
-          Logout
+        <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium transition-colors text-slate-600 hover:bg-red-50 hover:text-red-600 active:bg-red-100 group">
+          <LogOut size={18} className="text-slate-400 group-hover:text-red-600 transition-colors" />
+          <span className="font-semibold">Logout</span>
         </button>
       </div>
     </aside>
