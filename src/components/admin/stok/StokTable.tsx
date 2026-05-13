@@ -22,6 +22,7 @@ export interface StokItem {
   unit: string;
   status: 'Aman' | 'Rendah' | 'Habis';
   history: StokHistory[];
+  image?: string;
 }
 
 interface StokTableProps {
@@ -208,26 +209,38 @@ export function StokTable({ items, onAction }: StokTableProps) {
         <table className="w-full text-left border-collapse min-w-[900px]">
           <thead>
             <tr className="border-y border-slate-100 bg-slate-50/50">
-              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[12%]">ID BARANG</th>
-              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[22%]">PRODUK</th>
-              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[12%]">KATEGORI</th>
-              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[15%]">LOKASI RAK</th>
-              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[15%]">SISA STOK</th>
-              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[12%]">STATUS</th>
-              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[12%] text-center">AKSI</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[10%] text-center">ID BARANG</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[8%] text-center">GAMBAR</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[22%] text-center">PRODUK</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[12%] text-center">KATEGORI</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[16%] text-center">LOKASI RAK</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[14%] text-center">SISA STOK</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[10%] text-center">STATUS</th>
+              <th className="py-4 px-6 font-semibold text-slate-500 text-xs tracking-wider w-[8%] text-center">AKSI</th>
             </tr>
           </thead>
           <tbody>
             {paginatedItems.map((item) => (
               <tr key={item.id} className={`border-b border-slate-50 transition-colors group ${getRowBackground(item.status)}`}>
-                <td className="py-4 px-6 text-sm font-semibold text-slate-800">{item.id}</td>
-                <td className="py-4 px-6 text-sm font-semibold text-slate-800">{item.name}</td>
-                <td className="py-4 px-6 text-sm text-slate-600">{item.category}</td>
-                <td className="py-4 px-6 text-sm text-slate-600">{item.location}</td>
-                <td className="py-4 px-6">
+                <td className="py-4 px-6 text-sm font-semibold text-slate-800 text-left">{item.id}</td>
+                <td className="py-4 px-6 text-left">
+                  {item.image ? (
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg bg-slate-100 shrink-0 flex items-center justify-center text-slate-400 font-bold text-lg">
+                      {item.name.charAt(0)}
+                    </div>
+                  )}
+                </td>
+                <td className="py-4 px-6 text-sm font-semibold text-slate-800 text-left">{item.name}</td>
+                <td className="py-4 px-6 text-sm text-slate-600 text-left">{item.category}</td>
+                <td className="py-4 px-6 text-sm text-slate-600 text-left">{item.location}</td>
+                <td className="py-4 px-6 text-left">
                   {getProgressBar(item.status, item.stock, item.maxStock, item.unit)}
                 </td>
-                <td className="py-4 px-6">
+                <td className="py-4 px-6 text-left">
                   {getStatusBadge(item.status)}
                 </td>
                 <td className="py-4 px-6">
@@ -295,7 +308,7 @@ export function StokTable({ items, onAction }: StokTableProps) {
             ))}
             {paginatedItems.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-slate-500 text-sm">
+                <td colSpan={8} className="py-8 text-center text-slate-500 text-sm">
                   {searchTerm || selectedCategory ? 'Data tidak ditemukan' : 'Belum ada data stok'}
                 </td>
               </tr>

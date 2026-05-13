@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/ui/Button';
 
 export interface UserItem {
@@ -15,7 +15,7 @@ export interface UserItem {
 
 interface UsersTableProps {
   users: UserItem[];
-  onAction: (action: 'edit' | 'add', user?: UserItem) => void;
+  onAction: (action: 'edit' | 'add' | 'delete', user?: UserItem) => void;
 }
 
 export function UsersTable({ users, onAction }: UsersTableProps) {
@@ -63,7 +63,7 @@ export function UsersTable({ users, onAction }: UsersTableProps) {
               <th className="py-4 px-2 font-semibold text-slate-500 text-xs tracking-wider w-[15%]">ROLE</th>
               <th className="py-4 px-2 font-semibold text-slate-500 text-xs tracking-wider w-[20%]">PENEMPATAN</th>
               <th className="py-4 px-2 font-semibold text-slate-500 text-xs tracking-wider w-[15%]">STATUS</th>
-              <th className="py-4 px-2 font-semibold text-slate-500 text-xs tracking-wider w-[15%]">AKSI</th>
+              <th className="py-4 px-2 font-semibold text-slate-500 text-xs tracking-wider w-[15%] text-center">AKSI</th>
             </tr>
           </thead>
           <tbody>
@@ -79,12 +79,20 @@ export function UsersTable({ users, onAction }: UsersTableProps) {
                   </span>
                 </td>
                 <td className="py-4 px-2">
-                  <button 
-                    onClick={() => onAction('edit', user)}
-                    className="text-sm font-medium text-blue-500 hover:text-blue-700 transition-colors"
-                  >
-                    Edit
-                  </button>
+                  <div className="flex items-center justify-center gap-2">
+                    <button 
+                      onClick={() => onAction('edit', user)}
+                      className="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-colors"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button 
+                      onClick={() => onAction('delete', user)}
+                      className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

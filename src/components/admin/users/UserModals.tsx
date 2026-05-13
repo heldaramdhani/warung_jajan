@@ -12,11 +12,15 @@ interface UserModalsProps {
   setIsEditOpen: (open: boolean) => void;
   selectedUser: UserItem | null;
   submitEditUser: (user: UserItem) => void;
+  isDeleteOpen: boolean;
+  setIsDeleteOpen: (open: boolean) => void;
+  submitDeleteUser: (id: string) => void;
 }
 
 export function UserModals({
   isAddOpen, setIsAddOpen, submitAddUser,
-  isEditOpen, setIsEditOpen, selectedUser, submitEditUser
+  isEditOpen, setIsEditOpen, selectedUser, submitEditUser,
+  isDeleteOpen, setIsDeleteOpen, submitDeleteUser
 }: UserModalsProps) {
   const [editForm, setEditForm] = useState<UserItem | null>(null);
   
@@ -179,6 +183,32 @@ export function UserModals({
                 Simpan
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+    </Modal>
+
+    <Modal 
+      isOpen={isDeleteOpen} 
+      onClose={() => setIsDeleteOpen(false)}
+      title={null}
+    >
+      {selectedUser && (
+        <div className="flex flex-col text-slate-700">
+          <div className="text-center pb-3 border-b border-dashed border-slate-300 mb-4">
+            <h2 className="text-lg font-bold text-red-600">Hapus Data User</h2>
+          </div>
+          <p className="text-slate-600 text-sm text-center mb-6">
+            Apakah Anda yakin ingin menghapus user <br/>
+            <span className="font-bold text-slate-800 text-base block mt-2">👤 {selectedUser.fullName} ({selectedUser.username})</span>
+          </p>
+          <div className="flex justify-center gap-3 pt-4 border-t border-slate-100">
+            <Button variant="secondary" onClick={() => setIsDeleteOpen(false)} className="px-6">
+              Batal
+            </Button>
+            <Button variant="danger" onClick={() => submitDeleteUser(selectedUser.id)} className="px-6">
+              Ya, Hapus
+            </Button>
           </div>
         </div>
       )}

@@ -6,75 +6,13 @@ import { ProductTable, Product } from '@/components/admin/produk/ProductTable';
 import { ProductModals } from '@/components/admin/produk/ProductModals';
 import { ProductStats } from '@/components/admin/produk/ProductStats';
 import { Button } from '@/ui/Button';
-
-const initialProducts: Product[] = [
-  {
-    id: 'PRD-001',
-    name: 'Dimsum Ayam',
-    description: '6 pcs • Siap jual',
-    category: 'Dimsum',
-    purchasePrice: 'Rp 8.000',
-    sellingPrice: 'Rp 18.000',
-    stock: 82,
-    stockStatus: 'high',
-  },
-  {
-    id: 'PRD-002',
-    name: 'Dimsum Mentai',
-    description: 'Porsi reguler • Fresh made',
-    category: 'Dimsum',
-    purchasePrice: 'Rp 10.000',
-    sellingPrice: 'Rp 22.000',
-    stock: 24,
-    stockStatus: 'medium',
-  },
-  {
-    id: 'PRD-003',
-    name: 'Dimsum Mozarella',
-    description: 'Ukuran medium • Frozen stock',
-    category: 'Dimsum',
-    purchasePrice: 'Rp 7.500',
-    sellingPrice: 'Rp 15.000',
-    stock: 8,
-    stockStatus: 'low',
-  },
-  {
-    id: 'PRD-004',
-    name: 'Es Teh Manis',
-    description: 'Cup 16 oz • Best seller',
-    category: 'Minuman',
-    purchasePrice: 'Rp 3.000',
-    sellingPrice: 'Rp 8.000',
-    stock: 63,
-    stockStatus: 'high',
-  },
-  {
-    id: 'PRD-005',
-    name: 'Dimsum Kuah Pedas',
-    description: 'Porsi jumbo • Pedas level 3',
-    category: 'Dimsum',
-    purchasePrice: 'Rp 9.500',
-    sellingPrice: 'Rp 19.000',
-    stock: 11,
-    stockStatus: 'low',
-  },
-  {
-    id: 'PRD-006',
-    name: 'Teh Tarik',
-    description: 'Cup 16 oz • Best seller',
-    category: 'Minuman',
-    purchasePrice: 'Rp 5.000',
-    sellingPrice: 'Rp 12.000',
-    stock: 18,
-    stockStatus: 'medium',
-  },
-];
+import { Select } from '@/ui/Select';
+import { initialProducts } from '@/data/mockProducts';
 
 export default function ProdukPage() {
   const [productsList, setProductsList] = useState<Product[]>(initialProducts);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Semua kategori');
-  const [statusFilter, setStatusFilter] = useState('Semua status');
   
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,7 +22,7 @@ export default function ProdukPage() {
 
   // Form states for Add Product
   const [addForm, setAddForm] = useState({
-    name: '', description: '', category: 'Dimsum', stock: '', purchasePrice: '', sellingPrice: ''
+    name: '', description: '', category: 'Dimsum', purchasePrice: '', sellingPrice: '', image: ''
   });
 
   // Filter products
@@ -93,13 +31,8 @@ export default function ProdukPage() {
                           product.id.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCategory = categoryFilter === 'Semua kategori' || product.category === categoryFilter;
-    
-    const matchesStatus = statusFilter === 'Semua status' || 
-      (statusFilter === 'Aman' && product.stockStatus === 'high') ||
-      (statusFilter === 'Menipis' && product.stockStatus === 'medium') ||
-      (statusFilter === 'Kritis' && product.stockStatus === 'low');
 
-    return matchesSearch && matchesCategory && matchesStatus;
+    return matchesSearch && matchesCategory;
   });
 
   const handleEdit = (product: Product) => {
@@ -112,12 +45,6 @@ export default function ProdukPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const getStockStatus = (stock: number) => {
-    if (stock > 20) return 'high';
-    if (stock > 10) return 'medium';
-    return 'low';
-  };
-
   const submitAddProduct = () => {
     const newProduct: Product = {
       id: `PRD-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -126,12 +53,11 @@ export default function ProdukPage() {
       category: addForm.category,
       purchasePrice: `Rp ${addForm.purchasePrice || '0'}`,
       sellingPrice: `Rp ${addForm.sellingPrice || '0'}`,
-      stock: parseInt(addForm.stock) || 0,
-      stockStatus: getStockStatus(parseInt(addForm.stock) || 0)
+      image: addForm.image || undefined
     };
     setProductsList([newProduct, ...productsList]);
     setIsModalOpen(false);
-    setAddForm({ name: '', description: '', category: 'Dimsum', stock: '', purchasePrice: '', sellingPrice: '' });
+    setAddForm({ name: '', description: '', category: 'Dimsum', purchasePrice: '', sellingPrice: '', image: '' });
   };
 
   const submitEditProduct = () => {
@@ -147,15 +73,6 @@ export default function ProdukPage() {
     setProductsList(productsList.filter(p => p.id !== selectedProduct.id));
     setIsDeleteModalOpen(false);
     setSelectedProduct(null);
-  };
-
-  const filterSelectClass = "appearance-none px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-[#0f9d58]";
-  const filterSelectStyle = { 
-    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2394a3b8\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', 
-    backgroundPosition: 'right 12px center', 
-    backgroundRepeat: 'no-repeat', 
-    backgroundSize: '16px', 
-    paddingRight: '40px' 
   };
 
   return (
@@ -190,27 +107,16 @@ export default function ProdukPage() {
           />
         </div>
         <div className="flex gap-4">
-          <select 
+          <Select 
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className={filterSelectClass}
-            style={filterSelectStyle}
-          >
-            <option value="Semua kategori">Semua kategori</option>
-            <option value="Dimsum">Dimsum</option>
-            <option value="Minuman">Minuman</option>
-          </select>
-          <select 
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className={filterSelectClass}
-            style={filterSelectStyle}
-          >
-            <option value="Semua status">Semua status</option>
-            <option value="Aman">Stok Aman</option>
-            <option value="Menipis">Stok Menipis</option>
-            <option value="Kritis">Stok Kritis</option>
-          </select>
+            options={[
+              { label: 'Semua kategori', value: 'Semua kategori' },
+              { label: 'Dimsum', value: 'Dimsum' },
+              { label: 'Minuman', value: 'Minuman' },
+            ]}
+          />
+
         </div>
       </div>
 

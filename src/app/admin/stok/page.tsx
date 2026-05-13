@@ -16,6 +16,7 @@ const initialStokItems: StokItem[] = [
     unit: 'pack',
     status: 'Rendah',
     history: [],
+    image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?q=80&w=200&auto=format&fit=crop'
   },
   {
     id: '#INV-034',
@@ -27,6 +28,7 @@ const initialStokItems: StokItem[] = [
     unit: 'pack',
     status: 'Rendah',
     history: [],
+    image: 'https://images.unsplash.com/photo-1627581575459-3c3bdf1bc5e8?q=80&w=200&auto=format&fit=crop'
   },
   {
     id: '#INV-052',
@@ -38,6 +40,7 @@ const initialStokItems: StokItem[] = [
     unit: 'botol',
     status: 'Habis',
     history: [],
+    image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=200&auto=format&fit=crop'
   },
   {
     id: '#INV-066',
@@ -49,6 +52,7 @@ const initialStokItems: StokItem[] = [
     unit: 'botol',
     status: 'Rendah',
     history: [],
+    image: 'https://images.unsplash.com/photo-1629851759247-c0e0b3dd1dcc?q=80&w=200&auto=format&fit=crop'
   },
   {
     id: '#INV-079',
@@ -60,6 +64,7 @@ const initialStokItems: StokItem[] = [
     unit: 'jar',
     status: 'Aman',
     history: [],
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=200&auto=format&fit=crop'
   },
   {
     id: '#INV-095',
@@ -71,6 +76,7 @@ const initialStokItems: StokItem[] = [
     unit: 'botol',
     status: 'Rendah',
     history: [],
+    image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?q=80&w=200&auto=format&fit=crop'
   },
 ];
 

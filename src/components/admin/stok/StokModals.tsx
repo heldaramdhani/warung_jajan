@@ -69,23 +69,25 @@ export function StokModals({
             </div>
             
             {/* Section 1: Produk Info */}
-            <div className="py-4 border-b border-dashed border-slate-300 flex flex-col gap-3">
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-xl">📦</span>
+            <div className="py-4 border-b border-dashed border-slate-300 flex gap-4">
+              {selectedItem.image ? (
+                <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                  <img src={selectedItem.image} alt={selectedItem.name} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-20 h-20 rounded-xl bg-slate-100 shrink-0 flex items-center justify-center text-slate-400 font-bold text-2xl">
+                  {selectedItem.name.charAt(0)}
+                </div>
+              )}
+              <div className="flex flex-col justify-center gap-1.5">
+                <div>
                   <h3 className="text-base font-bold text-slate-800">{selectedItem.name}</h3>
+                  <div className="text-sm font-medium text-slate-500">{selectedItem.id}</div>
                 </div>
-                <div className="text-sm font-medium text-slate-500 pl-7">{selectedItem.id}</div>
-              </div>
-              
-              <div className="flex flex-col gap-1.5 pl-7 mt-1 text-sm font-medium">
-                <div className="flex items-center gap-2">
-                  <span>📍</span> 
-                  <span>{selectedItem.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span>💰</span> 
-                  <span>Rp {(Math.floor(Math.random() * 20) + 10)}.000</span>
+                <div className="flex flex-col gap-1 text-sm font-medium">
+                  <div className="flex items-center gap-2">
+                    <span>📍</span> <span>{selectedItem.location}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -174,6 +176,11 @@ export function StokModals({
                 label="Nama Produk" 
                 value={editForm.name}
                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
+              <Input 
+                label="URL Gambar" 
+                value={editForm.image || ''}
+                onChange={(e) => setEditForm({ ...editForm, image: e.target.value })}
               />
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
