@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, Search, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Search, ChevronDown, Loader2 } from 'lucide-react';
 import { ProductTable, Product } from '@/components/admin/produk/ProductTable';
 import { ProductModals } from '@/components/admin/produk/ProductModals';
 import { ProductStats } from '@/components/admin/produk/ProductStats';
 import { Button } from '@/ui/Button';
 import { Select } from '@/ui/Select';
-import { initialProducts } from '@/data/mockProducts';
 
 export default function ProdukPage() {
-  const [productsList, setProductsList] = useState<Product[]>(initialProducts);
+  const [productsList, setProductsList] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Semua kategori');
   
@@ -24,6 +24,36 @@ export default function ProdukPage() {
   const [addForm, setAddForm] = useState({
     name: '', description: '', category: 'Dimsum', purchasePrice: '', sellingPrice: '', image: ''
   });
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/produk');
+        const result = await response.json();
+        
+        if (result.success && Array.isArray(result.data)) {
+          const transformedProducts = result.data.map((p: any) => ({
+            id: p.id,
+            name: p.nama_produk,
+            description: `Stok: ${p.stok}`,
+            category: p.kategori?.nama_kategori || 'Tanpa Kategori',
+            purchasePrice: 'Rp 0',
+            sellingPrice: `Rp ${p.harga.toLocaleString('id-ID')}`,
+            image: p.gambar_url || undefined
+          }));
+          setProductsList(transformedProducts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Filter products
   const filteredProducts = productsList.filter((product) => {
@@ -121,12 +151,19 @@ export default function ProdukPage() {
       </div>
 
       {/* Product Table */}
-      <ProductTable 
-        products={filteredProducts} 
-        totalProducts={productsList.length} 
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white border border-slate-100 rounded-2xl">
+          <Loader2 className="h-8 w-8 text-[#0f9d58] animate-spin mb-4" />
+          <p className="text-slate-500 font-medium">Memuat data produk...</p>
+        </div>
+      ) : (
+        <ProductTable 
+          products={filteredProducts} 
+          totalProducts={productsList.length} 
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
 
       {/* All Product Modals */}
       <ProductModals 
