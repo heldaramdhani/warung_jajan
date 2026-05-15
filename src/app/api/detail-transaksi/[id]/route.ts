@@ -68,7 +68,7 @@ export async function GET(
  *             properties:
  *               jumlah:
  *                 type: integer
- *               harga:
+ *               harga_satuan:
  *                 type: integer
  *               subtotal:
  *                 type: integer
@@ -87,13 +87,13 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { jumlah, harga, subtotal } = body;
+    const { jumlah, harga_satuan, subtotal } = body;
 
     const detail = await prisma.detail_transaksi.update({
       where: { id },
       data: {
         jumlah,
-        harga,
+        harga_satuan,
         subtotal,
       },
     });
