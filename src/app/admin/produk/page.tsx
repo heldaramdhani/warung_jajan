@@ -22,7 +22,7 @@ export default function ProdukPage() {
 
   // Form states for Add Product
   const [addForm, setAddForm] = useState({
-    name: '', description: '', category: 'Dimsum', purchasePrice: '', sellingPrice: '', image: ''
+    name: '', description: '', category: 'Dimsum', sellingPrice: '', image: ''
   });
 
   // Fetch products from API
@@ -39,7 +39,6 @@ export default function ProdukPage() {
             name: p.nama_produk,
             description: `Stok: ${p.stok}`,
             category: p.kategori?.nama_kategori || 'Tanpa Kategori',
-            purchasePrice: 'Rp 0',
             sellingPrice: `Rp ${p.harga.toLocaleString('id-ID')}`,
             image: p.gambar_url || undefined
           }));
@@ -81,13 +80,12 @@ export default function ProdukPage() {
       name: addForm.name || 'Produk Baru',
       description: addForm.description || '-',
       category: addForm.category,
-      purchasePrice: `Rp ${addForm.purchasePrice || '0'}`,
       sellingPrice: `Rp ${addForm.sellingPrice || '0'}`,
       image: addForm.image || undefined
     };
     setProductsList([newProduct, ...productsList]);
     setIsModalOpen(false);
-    setAddForm({ name: '', description: '', category: 'Dimsum', purchasePrice: '', sellingPrice: '', image: '' });
+    setAddForm({ name: '', description: '', category: 'Dimsum', sellingPrice: '', image: '' });
   };
 
   const submitEditProduct = () => {

@@ -79,14 +79,7 @@ export function ProductModals({
               <option value="Minuman">Minuman</option>
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Input 
-              label="Harga Beli" 
-              type="number" 
-              value={addForm.purchasePrice}
-              onChange={(e) => setAddForm({ ...addForm, purchasePrice: e.target.value })}
-              placeholder="Rp 0" 
-            />
+          <div className="flex flex-col gap-4">
             <Input 
               label="Harga Jual" 
               type="number" 
@@ -158,14 +151,7 @@ export function ProductModals({
                 <option value="Minuman">Minuman</option>
               </select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Input 
-                label="Harga Beli" 
-                type="text" 
-                value={selectedProduct.purchasePrice.replace('Rp ', '').replace('.', '')}
-                onChange={(e) => setSelectedProduct({ ...selectedProduct, purchasePrice: `Rp ${e.target.value}` })}
-                placeholder="0" 
-              />
+            <div className="flex flex-col gap-4">
               <Input 
                 label="Harga Jual" 
                 type="text" 
