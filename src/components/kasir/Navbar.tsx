@@ -11,10 +11,8 @@ export function Navbar() {
 
   if (pathname === '/kasir/transaksi') {
     title = 'Transaksi Baru';
-    subtitle = 'Input pesanan pelanggan';
   } else if (pathname === '/kasir/riwayat') {
     title = 'Riwayat Transaksi';
-    subtitle = 'Daftar semua transaksi yang telah dilakukan';
   }
 
   return (
