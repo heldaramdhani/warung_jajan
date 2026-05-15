@@ -9,7 +9,6 @@ export interface Product {
   name: string;
   description: string;
   category: string;
-  purchasePrice: string;
   sellingPrice: string;
   image?: string;
 }
@@ -71,7 +70,7 @@ export function ProductTable({ products = [], totalProducts = 0, onEdit, onDelet
               <th className="py-4 px-6 font-medium text-slate-400 text-sm text-center">Gambar</th>
               <th className="py-4 px-6 font-medium text-slate-400 text-sm text-center">Nama Produk</th>
               <th className="py-4 px-6 font-medium text-slate-400 text-sm text-center">Kategori</th>
-              <th className="py-4 px-6 font-medium text-slate-400 text-sm text-center">Harga Beli</th>
+
               <th className="py-4 px-6 font-medium text-slate-400 text-sm text-center">Harga Jual</th>
               <th className="py-4 px-6 font-medium text-slate-400 text-sm text-center">Aksi</th>
             </tr>
@@ -79,7 +78,7 @@ export function ProductTable({ products = [], totalProducts = 0, onEdit, onDelet
           <tbody>
             {paginatedProducts.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-slate-500">Data tidak ditemukan</td>
+                <td colSpan={6} className="py-8 text-center text-slate-500">Data tidak ditemukan</td>
               </tr>
             ) : (
               paginatedProducts.map((product) => (
@@ -105,7 +104,7 @@ export function ProductTable({ products = [], totalProducts = 0, onEdit, onDelet
                       {product.category}
                     </Badge>
                   </td>
-                  <td className="py-4 px-6 text-sm text-slate-600">{product.purchasePrice}</td>
+
                   <td className="py-4 px-6 text-sm text-slate-600">{product.sellingPrice}</td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
