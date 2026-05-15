@@ -14,7 +14,7 @@ model detail_transaksi {
   transaksi_id String    @db.Uuid
   produk_id    String    @db.Uuid
   jumlah       Int
-  harga        Int
+  harga_satuan Int
   subtotal     Int
   produk       produk    @relation(fields: [produk_id], references: [id], onUpdate: NoAction)
   transaksi    transaksi @relation(fields: [transaksi_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -33,12 +33,22 @@ model produk {
   id               String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   nama_produk      String             @db.VarChar
   harga            Int
-  stok             Int
   gambar_url       String?
   kategori_id      String?            @db.Uuid
   created_at       DateTime?          @default(now()) @db.Timestamptz(6)
   detail_transaksi detail_transaksi[]
   kategori         kategori?          @relation(fields: [kategori_id], references: [id], onUpdate: NoAction)
+  stok_detail      stok?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model stok {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  produk_id   String    @unique @db.Uuid
+  jumlah_stok Int       @default(0)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  produk      produk    @relation(fields: [produk_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -51,7 +61,7 @@ model transaksi {
   user_id           String             @db.Uuid
   created_at        DateTime?          @default(now()) @db.Timestamptz(6)
   detail_transaksi  detail_transaksi[]
-  users             users              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user              users              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

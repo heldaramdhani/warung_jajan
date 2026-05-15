@@ -40,6 +40,7 @@ export async function GET(
       where: { id },
       include: {
         kategori: true,
+        stok_detail: true,
       },
     });
 
@@ -47,7 +48,12 @@ export async function GET(
       return NextResponse.json({ success: false, message: 'Produk not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: produk }, { status: 200 });
+    const transformedProduk = {
+      ...produk,
+      stok: produk.stok_detail?.jumlah_stok ?? 0
+    };
+
+    return NextResponse.json({ success: true, data: transformedProduk }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
@@ -118,7 +124,6 @@ export async function PUT(
     const data: any = {};
     if (nama_produk) data.nama_produk = nama_produk;
     if (hargaStr !== null) data.harga = parseInt(hargaStr);
-    if (stokStr !== null) data.stok = parseInt(stokStr);
     if (kategori_id_str !== null) data.kategori_id = kategori_id_str || null;
 
     if (gambarFile && gambarFile.size > 0) {

@@ -19,10 +19,16 @@ export async function GET() {
     const produk = await prisma.produk.findMany({
       include: {
         kategori: true,
+        stok_detail: true,
       },
       orderBy: { id: 'asc' },
     });
-    return NextResponse.json({ success: true, data: produk }, { status: 200 });
+    const transformedProduk = produk.map((p: any) => ({
+      ...p,
+      stok: p.stok_detail?.jumlah_stok ?? 0
+    }));
+
+    return NextResponse.json({ success: true, data: transformedProduk }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
@@ -79,9 +85,9 @@ export async function POST(request: Request) {
     const kategori_id_str = formData.get('kategori_id') as string;
     const gambarFile = formData.get('gambar') as File | null;
 
-    if (!nama_produk || !hargaStr || !stokStr) {
+    if (!nama_produk || !hargaStr) {
       return NextResponse.json(
-        { success: false, message: 'nama_produk, harga, dan stok is required' },
+        { success: false, message: 'nama_produk dan harga is required' },
         { status: 400 }
       );
     }
@@ -118,7 +124,6 @@ export async function POST(request: Request) {
       data: {
         nama_produk,
         harga: parseInt(hargaStr),
-        stok: parseInt(stokStr),
         gambar_url,
         kategori_id: kategori_id_str || null,
       },

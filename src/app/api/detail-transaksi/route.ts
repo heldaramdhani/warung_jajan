@@ -22,7 +22,11 @@ export async function GET() {
       },
       orderBy: { id: 'desc' },
     });
-    return NextResponse.json({ success: true, data: details }, { status: 200 });
+    const transformedDetails = details.map((d: any) => ({
+      ...d,
+      harga: d.harga_satuan
+    }));
+    return NextResponse.json({ success: true, data: transformedDetails }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
@@ -53,7 +57,7 @@ export async function GET() {
  *                 format: uuid
  *               jumlah:
  *                 type: integer
- *               harga:
+ *               harga_satuan:
  *                 type: integer
  *               subtotal:
  *                 type: integer
@@ -68,7 +72,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { transaksi_id, produk_id, jumlah, harga, subtotal } = body;
+    const { transaksi_id, produk_id, jumlah, harga_satuan, subtotal } = body;
 
     if (!transaksi_id || !produk_id || !jumlah) {
       return NextResponse.json(
@@ -78,7 +82,7 @@ export async function POST(request: Request) {
     }
 
     // If harga or subtotal not provided, we can try to fetch from product
-    let finalHarga = harga;
+    let finalHarga = harga_satuan;
     let finalSubtotal = subtotal;
 
     if (!finalHarga || !finalSubtotal) {
@@ -102,7 +106,7 @@ export async function POST(request: Request) {
         transaksi_id,
         produk_id,
         jumlah,
-        harga: finalHarga,
+        harga_satuan: finalHarga,
         subtotal: finalSubtotal,
       },
     });
