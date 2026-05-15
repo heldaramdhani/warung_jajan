@@ -169,6 +169,9 @@ export async function POST(request: Request) {
       });
 
       return transaksi;
+    }, {
+      maxWait: 5000,
+      timeout: 15000, // 15 seconds to be safe
     });
 
     return NextResponse.json({ success: true, data: result }, { status: 201 });
