@@ -1,27 +1,48 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { StatCards } from '@/components/kasir/riwayat/StatCards';
 import { HistoryFilters } from '@/components/kasir/riwayat/HistoryFilters';
 import { TransactionTable } from '@/components/kasir/riwayat/TransactionTable';
-
-const MOCK_TRANSACTIONS = [
-  { id: '#TRX-20260405-001', waktu: '08:12', method: 'Tunai', pelanggan: 'Guest / Walk-in', kasir: 'Eleanor', total: 'Rp 72.600', status: 'Lunas' },
-  { id: '#TRX-20260405-002', waktu: '09:07', method: 'QRIS', pelanggan: 'Nadia Putri', kasir: 'Rian', total: 'Rp 126.000', status: 'Lunas' },
-  { id: '#TRX-20260405-003', waktu: '09:41', method: 'Tunai', pelanggan: 'Budi Santoso', kasir: 'Eleanor', total: 'Rp 54.000', status: 'Tertunda' },
-  { id: '#TRX-20260405-004', waktu: '09:52', method: 'QRIS', pelanggan: 'Maya Lestari', kasir: 'Aldi', total: 'Rp 86.500', status: 'Lunas' },
-  { id: '#TRX-20260405-005', waktu: '10:14', method: 'QRIS', pelanggan: 'Devi Anggraini', kasir: 'Rian', total: 'Rp 81.000', status: 'Refund' },
-  { id: '#TRX-20260405-006', waktu: '10:46', method: 'Tunai', pelanggan: 'Guest / Walk-in', kasir: 'Aldi', total: 'Rp 43.000', status: 'Lunas' },
-];
+import { Loader2 } from 'lucide-react';
 
 export default function RiwayatTransaksiPage() {
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [method, setMethod] = useState('Semua metode');
   const [cashier, setCashier] = useState('Semua kasir');
   const [status, setStatus] = useState('Semua Status');
 
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/transaksi');
+        const result = await response.json();
+        if (result.success) {
+          const transformed = result.data.map((trx: any) => ({
+            id: trx.kode_transaksi,
+            waktu: new Date(trx.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            method: trx.metode_pembayaran,
+            pelanggan: 'Guest / Walk-in', // Not in ERD/API
+            kasir: trx.user?.nama || 'Unknown',
+            total: `Rp ${trx.total.toLocaleString('id-ID')}`,
+            status: 'Lunas' // Assuming success = lunas for now
+          }));
+          setTransactions(transformed);
+        }
+      } catch (error) {
+        console.error('Failed to fetch transactions:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTransactions();
+  }, []);
+
   const filteredTransactions = useMemo(() => {
-    return MOCK_TRANSACTIONS.filter(trx => {
+    return transactions.filter(trx => {
       const matchesSearch = trx.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
                            trx.pelanggan.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesMethod = method === 'Semua metode' || trx.method === method;
@@ -30,27 +51,33 @@ export default function RiwayatTransaksiPage() {
       
       return matchesSearch && matchesMethod && matchesCashier && matchesStatus;
     });
-  }, [searchTerm, method, cashier, status]);
+  }, [transactions, searchTerm, method, cashier, status]);
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Stats Cards Row */}
-      <StatCards />
-
-      {/* Main Content (Table & Filters) */}
-      <div className="space-y-6">
-        <HistoryFilters 
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          method={method}
-          setMethod={setMethod}
-          cashier={cashier}
-          setCashier={setCashier}
-          status={status}
-          setStatus={setStatus}
-        />
-        <TransactionTable transactions={filteredTransactions} />
-      </div>
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-slate-100">
+          <Loader2 className="h-8 w-8 text-[#0f9d58] animate-spin mb-4" />
+          <p className="text-slate-500 font-medium">Memuat riwayat transaksi...</p>
+        </div>
+      ) : (
+        <>
+          <StatCards transactions={transactions} />
+          <div className="space-y-6">
+            <HistoryFilters 
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              method={method}
+              setMethod={setMethod}
+              cashier={cashier}
+              setCashier={setCashier}
+              status={status}
+              setStatus={setStatus}
+            />
+            <TransactionTable transactions={filteredTransactions} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

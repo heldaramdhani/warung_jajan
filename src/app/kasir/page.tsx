@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Wallet, Receipt, ShoppingCart, Clock, User, CreditCard } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Wallet, Receipt, ShoppingCart, Clock, User, CreditCard, Loader2 } from 'lucide-react';
 import { StatCard } from '@/components/admin/StatCard';
 
 // Status badge component
@@ -20,14 +20,58 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export default function KasirDashboard() {
-  const recentTransactions = [
-    { id: '#TRX-9081', waktu: '14:32', pelanggan: 'Walk-in', metode: 'Kartu Kredit', jumlah: 'Rp145.500', status: 'Selesai' },
-    { id: '#TRX-9080', waktu: '14:15', pelanggan: 'Sarah Jenkins', metode: 'Tunai', jumlah: 'Rp24.000', status: 'Selesai' },
-    { id: '#TRX-9079', waktu: '13:50', pelanggan: 'Walk-in', metode: 'E-Wallet', jumlah: 'Rp68.900', status: 'Menunggu' },
-    { id: '#TRX-9078', waktu: '13:22', pelanggan: 'Michael Chen', metode: 'Kartu Kredit', jumlah: 'Rp112.000', status: 'Dibatalkan' },
-    { id: '#TRX-9077', waktu: '12:45', pelanggan: 'Walk-in', metode: 'Tunai', jumlah: 'Rp15.500', status: 'Selesai' },
-    { id: '#TRX-9076', waktu: '12:10', pelanggan: 'Emily Davis', metode: 'Kartu Kredit', jumlah: 'Rp210.000', status: 'Selesai' },
-  ];
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/transaksi');
+        const result = await response.json();
+        if (result.success) {
+          setTransactions(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const stats = useMemo(() => {
+    const totalRevenue = transactions.reduce((acc, curr) => acc + curr.total, 0);
+    const totalTransactions = transactions.length;
+    const avgOrder = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
+
+    return {
+      totalRevenue: `Rp ${totalRevenue.toLocaleString('id-ID')}`,
+      totalTransactions: totalTransactions.toString(),
+      avgOrder: `Rp ${Math.round(avgOrder).toLocaleString('id-ID')}`
+    };
+  }, [transactions]);
+
+  const recentTransactions = useMemo(() => {
+    return transactions.slice(0, 6).map((trx: any) => ({
+      id: trx.kode_transaksi,
+      waktu: new Date(trx.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+      pelanggan: 'Walk-in',
+      metode: trx.metode_pembayaran,
+      jumlah: `Rp ${trx.total.toLocaleString('id-ID')}`,
+      status: 'Selesai'
+    }));
+  }, [transactions]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-40">
+        <Loader2 className="h-10 w-10 text-[#0f9d58] animate-spin mb-4" />
+        <p className="text-slate-500 font-medium">Menyiapkan dashboard kasir...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -35,30 +79,24 @@ export default function KasirDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard 
           title="TOTAL PENDAPATAN"
-          value="Rp12.450.000"
-          trend="+15.2%"
-          trendPositive={true}
-          subtitle="dibanding kemarin"
+          value={stats.totalRevenue}
+          subtitle="Total akumulasi"
           icon={Wallet}
           iconBgColor="bg-emerald-50"
           iconColor="text-emerald-600"
         />
         <StatCard 
           title="JUMLAH TRANSAKSI"
-          value="142"
-          trend="+8.4%"
-          trendPositive={true}
-          subtitle="dibanding kemarin"
+          value={stats.totalTransactions}
+          subtitle="Transaksi terdaftar"
           icon={Receipt}
           iconBgColor="bg-blue-50"
           iconColor="text-blue-600"
         />
         <StatCard 
           title="RATA-RATA NILAI PESANAN"
-          value="Rp87.670"
-          trend="-2.1%"
-          trendPositive={false}
-          subtitle="dibanding kemarin"
+          value={stats.avgOrder}
+          subtitle="Rata-rata per nota"
           icon={ShoppingCart}
           iconBgColor="bg-purple-50"
           iconColor="text-purple-600"
@@ -71,9 +109,9 @@ export default function KasirDashboard() {
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
             Transaksi Terbaru
           </h2>
-          <button className="text-[#0f9d58] text-xs font-bold hover:underline">
+          <a href="/kasir/riwayat" className="text-[#0f9d58] text-xs font-bold hover:underline">
             Lihat Semua
-          </button>
+          </a>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -115,6 +153,11 @@ export default function KasirDashboard() {
                   </td>
                 </tr>
               ))}
+              {recentTransactions.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-slate-400 text-sm">Belum ada transaksi hari ini</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
