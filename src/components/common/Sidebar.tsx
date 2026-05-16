@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Store, LayoutDashboard, Package, FileText, Layers, Users, LogOut } from 'lucide-react';
+import { Store, LayoutDashboard, Package, FileText, Layers, Users, LogOut, Tag } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -11,6 +11,7 @@ export function Sidebar() {
   const navLinks = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/produk', label: 'Produk', icon: Package },
+    { href: '/admin/kategori', label: 'Kelola Kategori', icon: Tag },
     { href: '/admin/laporan', label: 'Laporan', icon: FileText },
     { href: '/admin/stok', label: 'Stok', icon: Layers },
     { href: '/admin/users', label: 'Kelola User', icon: Users },

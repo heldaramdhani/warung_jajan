@@ -57,24 +57,74 @@ export default function TransaksiPage() {
     }, {} as Record<string, Product[]>);
   }, [products, searchTerm, activeCategory]);
 
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [cashierUserId, setCashierUserId] = useState<string | null>(null);
+
   // --- Effects ---
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/produk');
-        const result = await response.json();
-        if (result.success) setProducts(result.data);
+        // Fetch products
+        const prodRes = await fetch('/api/produk');
+        const prodResult = await prodRes.json();
+        if (prodResult.success) setProducts(prodResult.data);
+
+        // Fetch a valid user_id to use as cashier (Fallback to first transaction's user or alert)
+        const transRes = await fetch('/api/transaksi');
+        const transResult = await transRes.json();
+        if (transResult.success && transResult.data.length > 0) {
+          setCashierUserId(transResult.data[0].user_id);
+        }
       } catch (error) {
-        console.error('Failed to fetch products:', error);
+        console.error('Failed to fetch initial data:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchProducts();
+    fetchInitialData();
   }, []);
 
   // --- Handlers ---
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+    
+    // We need a valid user_id. If not found, we'll have to ask or use a default.
+    if (!cashierUserId) {
+      const id = prompt('Masukkan UUID Kasir (Cek di Prisma Studio / Tabel Users):');
+      if (!id) return;
+      setCashierUserId(id);
+    }
+
+    try {
+      setIsProcessing(true);
+      const response = await fetch('/api/transaksi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: cashierUserId,
+          metode_pembayaran: paymentMethod,
+          items: cart.map(item => ({
+            produk_id: item.id,
+            jumlah: item.quantity
+          }))
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setIsModalOpen(true);
+      } else {
+        alert('Gagal memproses transaksi: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Terjadi kesalahan saat memproses pembayaran');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const addToCart = (product: Product) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
@@ -137,7 +187,7 @@ export default function TransaksiPage() {
           onClearCart={clearCart}
           customerName={customerName}
           setCustomerName={setCustomerName}
-          onCheckout={() => setIsModalOpen(true)}
+          onCheckout={handleCheckout}
         />
       </div>
 
