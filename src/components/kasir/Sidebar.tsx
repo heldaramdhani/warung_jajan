@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Store, LayoutDashboard, Package, FileText, Layers, Users, LogOut, Tag } from 'lucide-react';
+import { Store, LayoutDashboard, ShoppingCart, History, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -9,12 +9,9 @@ export function Sidebar() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/produk', label: 'Produk', icon: Package },
-    { href: '/admin/kategori', label: 'Kelola Kategori', icon: Tag },
-    { href: '/admin/laporan', label: 'Laporan', icon: FileText },
-    { href: '/admin/stok', label: 'Stok', icon: Layers },
-    { href: '/admin/users', label: 'Kelola User', icon: Users },
+    { href: '/kasir', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/kasir/transaksi', label: 'Transaksi', icon: ShoppingCart },
+    { href: '/kasir/riwayat', label: 'Riwayat Transaksi', icon: History },
   ];
 
   return (
@@ -23,7 +20,7 @@ export function Sidebar() {
       <div className="h-20 flex items-center px-6">
         <div className="flex items-center gap-3">
           <Store className="text-[#0f9d58]" size={24} />
-          <span className="font-bold text-slate-800 text-lg">DimsumKu</span>
+          <span className="font-bold text-slate-800 text-lg">Dimsumku</span>
         </div>
       </div>
 

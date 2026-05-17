@@ -17,7 +17,7 @@ export async function GET() {
   try {
     const transaksi = await prisma.transaksi.findMany({
       include: {
-        users: {
+        user: {
           select: {
             nama: true,
             email: true,
@@ -105,21 +105,28 @@ export async function POST(request: Request) {
 
       for (const item of items) {
         const product = await tx.produk.findUnique({
-          where: { id: item.produk_id }
+          where: { id: item.produk_id },
+          include: { stok_detail: true }
         });
 
         if (!product) {
           throw new Error(`Produk dengan ID ${item.produk_id} tidak ditemukan`);
         }
 
-        if (product.stok < item.jumlah) {
+        if (!product.stok_detail || product.stok_detail.jumlah_stok < item.jumlah) {
           throw new Error(`Stok produk ${product.nama_produk} tidak mencukupi`);
         }
 
         // Update stock
         await tx.produk.update({
           where: { id: item.produk_id },
-          data: { stok: product.stok - item.jumlah }
+          data: { 
+            stok_detail: {
+              update: {
+                jumlah_stok: product.stok_detail.jumlah_stok - item.jumlah
+              }
+            }
+          }
         });
 
         const subtotal = product.harga * item.jumlah;
@@ -127,7 +134,7 @@ export async function POST(request: Request) {
 
         detail_items.push({
           jumlah: item.jumlah,
-          harga: product.harga,
+          harga_satuan: product.harga,
           subtotal: subtotal,
           produk: {
             connect: { id: item.produk_id }
@@ -152,7 +159,7 @@ export async function POST(request: Request) {
               produk: true
             }
           },
-          users: {
+          user: {
             select: {
               nama: true,
               email: true
@@ -162,6 +169,9 @@ export async function POST(request: Request) {
       });
 
       return transaksi;
+    }, {
+      maxWait: 5000,
+      timeout: 15000, // 15 seconds to be safe
     });
 
     return NextResponse.json({ success: true, data: result }, { status: 201 });

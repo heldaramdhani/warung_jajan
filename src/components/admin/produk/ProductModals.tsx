@@ -62,34 +62,24 @@ export function ProductModals({
             onChange={(e) => setAddForm({ ...addForm, description: e.target.value })}
             placeholder="Contoh: 6 pcs • Siap jual" 
           />
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-slate-700">Kategori</label>
-              <select 
-                value={addForm.category}
-                onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f9d58]"
-              >
-                <option value="Dimsum">Dimsum</option>
-                <option value="Minuman">Minuman</option>
-              </select>
-            </div>
-            <Input 
-              label="Stok Awal" 
-              type="number" 
-              value={addForm.stock}
-              onChange={(e) => setAddForm({ ...addForm, stock: e.target.value })}
-              placeholder="0" 
-            />
+          <Input 
+            label="URL Gambar" 
+            value={addForm.image || ''}
+            onChange={(e) => setAddForm({ ...addForm, image: e.target.value })}
+            placeholder="Contoh: https://images.unsplash.com/..." 
+          />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-slate-700">Kategori</label>
+            <select 
+              value={addForm.category}
+              onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f9d58]"
+            >
+              <option value="Dimsum">Dimsum</option>
+              <option value="Minuman">Minuman</option>
+            </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Input 
-              label="Harga Beli" 
-              type="number" 
-              value={addForm.purchasePrice}
-              onChange={(e) => setAddForm({ ...addForm, purchasePrice: e.target.value })}
-              placeholder="Rp 0" 
-            />
+          <div className="flex flex-col gap-4">
             <Input 
               label="Harga Jual" 
               type="number" 
@@ -144,34 +134,24 @@ export function ProductModals({
               onChange={(e) => setSelectedProduct({ ...selectedProduct, description: e.target.value })}
               placeholder="Contoh: 6 pcs • Siap jual" 
             />
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">Kategori</label>
-                <select 
-                  value={selectedProduct.category}
-                  onChange={(e) => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#fbbc04]"
-                >
-                  <option value="Dimsum">Dimsum</option>
-                  <option value="Minuman">Minuman</option>
-                </select>
-              </div>
-              <Input 
-                label="Stok" 
-                type="number" 
-                value={selectedProduct.stock}
-                onChange={(e) => setSelectedProduct({ ...selectedProduct, stock: parseInt(e.target.value) || 0, stockStatus: getStockStatus(parseInt(e.target.value) || 0) })}
-                placeholder="0" 
-              />
+            <Input 
+              label="URL Gambar" 
+              value={selectedProduct.image || ''}
+              onChange={(e) => setSelectedProduct({ ...selectedProduct, image: e.target.value })}
+              placeholder="Contoh: https://images.unsplash.com/..." 
+            />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-slate-700">Kategori</label>
+              <select 
+                value={selectedProduct.category}
+                onChange={(e) => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#fbbc04]"
+              >
+                <option value="Dimsum">Dimsum</option>
+                <option value="Minuman">Minuman</option>
+              </select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Input 
-                label="Harga Beli" 
-                type="text" 
-                value={selectedProduct.purchasePrice.replace('Rp ', '').replace('.', '')}
-                onChange={(e) => setSelectedProduct({ ...selectedProduct, purchasePrice: `Rp ${e.target.value}` })}
-                placeholder="0" 
-              />
+            <div className="flex flex-col gap-4">
               <Input 
                 label="Harga Jual" 
                 type="text" 
@@ -192,8 +172,8 @@ export function ProductModals({
                 Batal
               </Button>
               <Button 
+                variant="primary"
                 onClick={submitEditProduct}
-                className="bg-[#fbbc04] text-white hover:bg-yellow-500 focus:ring-[#fbbc04]"
               >
                 Simpan Perubahan
               </Button>

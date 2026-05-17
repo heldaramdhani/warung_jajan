@@ -1,72 +1,73 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Search, Calendar, FileDown, FileSpreadsheet } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Calendar, FileDown, FileSpreadsheet, Loader2 } from 'lucide-react';
 import { Button } from '@/ui/Button';
 import { LaporanTable, Laporan } from '@/components/admin/laporan/LaporanTable';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-const mockLaporan: Laporan[] = [
-  {
-    id: '#TRX-10021',
-    tanggalWaktu: '15 Mar 2026, 14:30',
-    namaKasir: 'Budi Santoso',
-    metodePembayaran: 'QRIS',
-    totalItem: 4,
-    totalBayar: 'Rp 125.000'
-  },
-  {
-    id: '#TRX-10022',
-    tanggalWaktu: '15 Mar 2026, 14:45',
-    namaKasir: 'Budi Santoso',
-    metodePembayaran: 'Tunai',
-    totalItem: 2,
-    totalBayar: 'Rp 45.000'
-  },
-  {
-    id: '#TRX-10023',
-    tanggalWaktu: '15 Mar 2026, 15:10',
-    namaKasir: 'Siti Aminah',
-    metodePembayaran: 'Debit',
-    totalItem: 8,
-    totalBayar: 'Rp 340.000'
-  },
-  {
-    id: '#TRX-10024',
-    tanggalWaktu: '15 Mar 2026, 15:25',
-    namaKasir: 'Budi Santoso',
-    metodePembayaran: 'QRIS',
-    totalItem: 1,
-    totalBayar: 'Rp 15.000'
-  },
-  {
-    id: '#TRX-10025',
-    tanggalWaktu: '15 Mar 2026, 16:00',
-    namaKasir: 'Siti Aminah',
-    metodePembayaran: 'Tunai',
-    totalItem: 3,
-    totalBayar: 'Rp 78.000'
-  },
-  {
-    id: '#TRX-10026',
-    tanggalWaktu: '15 Mar 2026, 16:15',
-    namaKasir: 'Siti Aminah',
-    metodePembayaran: 'QRIS',
-    totalItem: 5,
-    totalBayar: 'Rp 210.000'
-  }
-];
-
 export default function LaporanPage() {
+  const [laporanList, setLaporanList] = useState<Laporan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [kasirFilter, setKasirFilter] = useState('Semua Kasir');
   const [metodeFilter, setMetodeFilter] = useState('Metode Pembayaran');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  const filteredLaporan = mockLaporan.filter((item) => {
+  // Fetch transactions from API
+  useEffect(() => {
+    const fetchLaporan = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/transaksi');
+        const result = await response.json();
+        
+        if (result.success && Array.isArray(result.data)) {
+          const transformedLaporan = result.data.map((t: any) => {
+            // Calculate total items
+            const totalItem = t.detail_transaksi.reduce((acc: number, item: any) => acc + item.jumlah, 0);
+            
+            // Format date: "15 Mar 2026, 14:30"
+            const date = new Date(t.created_at || t.tanggal);
+            const day = date.getDate().toString().padStart(2, '0');
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+            const month = monthNames[date.getMonth()];
+            const year = date.getFullYear();
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const formattedDate = `${day} ${month} ${year}, ${hours}:${minutes}`;
+
+            // Map payment method
+            let method: 'QRIS' | 'Tunai' | 'Debit' = 'Tunai';
+            if (t.metode_pembayaran === 'QRIS') method = 'QRIS';
+            else if (t.metode_pembayaran === 'DEBIT' || t.metode_pembayaran === 'Debit') method = 'Debit';
+            else if (t.metode_pembayaran === 'CASH' || t.metode_pembayaran === 'Tunai') method = 'Tunai';
+
+            return {
+              id: t.kode_transaksi || `#TRX-${t.id.substring(0, 8)}`,
+              tanggalWaktu: formattedDate,
+              namaKasir: t.users?.nama || 'Unknown',
+              metodePembayaran: method,
+              totalItem: totalItem,
+              totalBayar: `Rp ${t.total.toLocaleString('id-ID')}`
+            };
+          });
+          setLaporanList(transformedLaporan);
+        }
+      } catch (error) {
+        console.error('Failed to fetch laporan:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLaporan();
+  }, []);
+
+  const filteredLaporan = laporanList.filter((item) => {
     const matchSearch = item.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchKasir = kasirFilter === 'Semua Kasir' || item.namaKasir === kasirFilter;
     const matchMetode = metodeFilter === 'Metode Pembayaran' || item.metodePembayaran === metodeFilter;
@@ -222,11 +223,18 @@ export default function LaporanPage() {
       </div>
 
       {/* Data Table */}
-      <LaporanTable 
-        data={filteredLaporan} 
-        totalPendapatan={totalPendapatanStr} 
-        totalItemKeseluruhan={totalItemKeseluruhan} 
-      />
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white border border-slate-100 rounded-2xl">
+          <Loader2 className="h-8 w-8 text-[#0f9d58] animate-spin mb-4" />
+          <p className="text-slate-500 font-medium">Memuat data laporan...</p>
+        </div>
+      ) : (
+        <LaporanTable 
+          data={filteredLaporan} 
+          totalPendapatan={totalPendapatanStr} 
+          totalItemKeseluruhan={totalItemKeseluruhan} 
+        />
+      )}
     </div>
   );
 }

@@ -5,77 +5,44 @@ import { StokStats } from '@/components/admin/stok/StokStats';
 import { StokTable, StokItem } from '@/components/admin/stok/StokTable';
 import { StokModals } from '@/components/admin/stok/StokModals';
 
-const initialStokItems: StokItem[] = [
-  {
-    id: '#INV-021',
-    name: 'Dimsum Ayam',
-    category: 'Dimsum',
-    location: 'Freezer A',
-    stock: 4,
-    maxStock: 50,
-    unit: 'pack',
-    status: 'Rendah',
-    history: [],
-  },
-  {
-    id: '#INV-034',
-    name: 'Dimsum Mozarella',
-    category: 'Dimsum',
-    location: 'Freezer A',
-    stock: 9,
-    maxStock: 50,
-    unit: 'pack',
-    status: 'Rendah',
-    history: [],
-  },
-  {
-    id: '#INV-052',
-    name: 'Lemon Tea',
-    category: 'Minuman',
-    location: 'Chiller Depan',
-    stock: 0,
-    maxStock: 24,
-    unit: 'botol',
-    status: 'Habis',
-    history: [],
-  },
-  {
-    id: '#INV-066',
-    name: 'Teh Tarik',
-    category: 'Minuman',
-    location: 'Chiller Depan',
-    stock: 6,
-    maxStock: 24,
-    unit: 'botol',
-    status: 'Rendah',
-    history: [],
-  },
-  {
-    id: '#INV-079',
-    name: 'Chili Oil',
-    category: 'Pelengkap',
-    location: 'Rak Bumbu',
-    stock: 42,
-    maxStock: 50,
-    unit: 'jar',
-    status: 'Aman',
-    history: [],
-  },
-  {
-    id: '#INV-095',
-    name: 'Kecap Asin',
-    category: 'Pelengkap',
-    location: 'Rak Bumbu',
-    stock: 2,
-    maxStock: 20,
-    unit: 'botol',
-    status: 'Rendah',
-    history: [],
-  },
-];
+// Fetching data from API instead of using initialStokItems
+
 
 export default function StokPage() {
-  const [stokItems, setStokItems] = useState<StokItem[]>(initialStokItems);
+  const [stokItems, setStokItems] = useState<StokItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchStok = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/stok');
+      const result = await response.json();
+      
+      if (result.success && Array.isArray(result.data)) {
+        const transformedData = result.data.map((s: any) => ({
+          id: s.id,
+          name: s.produk?.nama_produk || 'Unknown',
+          category: s.produk?.kategori?.nama_kategori || 'Tanpa Kategori',
+          location: 'Gudang Utama', // Default location
+          stock: s.jumlah_stok,
+          maxStock: 100, // Default max stock
+          unit: 'pcs', // Default unit
+          status: getStatus(s.jumlah_stok, 100),
+          history: [],
+          image: s.produk?.gambar_url || undefined
+        }));
+        setStokItems(transformedData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stock:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchStok();
+  }, []);
 
   // Modal States
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -100,42 +67,54 @@ export default function StokPage() {
     }
   };
 
-  const submitEditItem = (updatedItem: StokItem) => {
-    updatedItem.status = getStatus(updatedItem.stock, updatedItem.maxStock);
-    setStokItems(stokItems.map(item => item.id === updatedItem.id ? updatedItem : item));
-    setIsEditOpen(false);
-  };
-
-  const submitRestockItem = (id: string, additionalStock: number) => {
-    setStokItems(stokItems.map(item => {
-      if (item.id === id) {
-        const newStock = item.stock + additionalStock;
-        const newHistory = {
-          id: Date.now().toString(),
-          type: 'in' as const,
-          amount: additionalStock,
-          description: 'Restock',
-          date: new Date().toISOString()
-        };
-        
-        // Ensure item.history exists just in case
-        const currentHistory = item.history || [];
-        
-        return {
-          ...item,
-          stock: newStock,
-          status: getStatus(newStock, item.maxStock),
-          history: [newHistory, ...currentHistory]
-        };
+  const submitEditItem = async (updatedItem: StokItem) => {
+    try {
+      const response = await fetch(`/api/stok/${updatedItem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jumlah_stok: updatedItem.stock })
+      });
+      const result = await response.json();
+      if (result.success) {
+        fetchStok(); // Refresh data
+        setIsEditOpen(false);
       }
-      return item;
-    }));
-    setIsRestockOpen(false);
+    } catch (error) {
+      console.error('Failed to update stock:', error);
+    }
   };
 
-  const submitDeleteItem = (id: string) => {
-    setStokItems(stokItems.filter(item => item.id !== id));
-    setIsDeleteOpen(false);
+  const submitRestockItem = async (id: string, additionalStock: number) => {
+    const item = stokItems.find(i => i.id === id);
+    if (!item) return;
+
+    try {
+      const response = await fetch(`/api/stok/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jumlah_stok: item.stock + additionalStock })
+      });
+      const result = await response.json();
+      if (result.success) {
+        fetchStok(); // Refresh data
+        setIsRestockOpen(false);
+      }
+    } catch (error) {
+      console.error('Failed to restock:', error);
+    }
+  };
+
+  const submitDeleteItem = async (id: string) => {
+    try {
+      const response = await fetch(`/api/stok/${id}`, { method: 'DELETE' });
+      const result = await response.json();
+      if (result.success) {
+        fetchStok(); // Refresh data
+        setIsDeleteOpen(false);
+      }
+    } catch (error) {
+      console.error('Failed to delete stock:', error);
+    }
   };
 
   // Derived stats
@@ -151,7 +130,13 @@ export default function StokPage() {
         outOfStockItems={outOfStockItems} 
       />
 
-      <StokTable items={stokItems} onAction={handleAction} />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0f9d58]"></div>
+        </div>
+      ) : (
+        <StokTable items={stokItems} onAction={handleAction} />
+      )}
 
       <StokModals 
         isDetailOpen={isDetailOpen} setIsDetailOpen={setIsDetailOpen}

@@ -40,6 +40,7 @@ export async function GET(
       where: { id },
       include: {
         kategori: true,
+        stok_detail: true,
       },
     });
 
@@ -47,7 +48,12 @@ export async function GET(
       return NextResponse.json({ success: false, message: 'Produk not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: produk }, { status: 200 });
+    const transformedProduk = {
+      ...produk,
+      stok: produk.stok_detail?.jumlah_stok ?? 0
+    };
+
+    return NextResponse.json({ success: true, data: transformedProduk }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
@@ -57,7 +63,8 @@ export async function GET(
  * @swagger
  * /api/produk/{id}:
  *   put:
- *     summary: Memperbarui produk berdasarkan ID
+ *     summary: Memperbarui produk berdasarkan ID (Mendukung Update Parsial)
+ *     description: Anda hanya perlu mengisi field yang ingin diubah. Kosongkan field yang tidak ingin diubah.
  *     tags: [Produk]
  *     parameters:
  *       - in: path
@@ -76,17 +83,21 @@ export async function GET(
  *             properties:
  *               nama_produk:
  *                 type: string
+ *                 description: (Opsional) Nama produk baru
  *               harga:
  *                 type: integer
+ *                 description: (Opsional) Harga produk baru
  *               stok:
  *                 type: integer
+ *                 description: (Opsional) Jumlah stok baru
  *               gambar:
  *                 type: string
  *                 format: binary
- *                 description: Gambar produk
+ *                 description: (Opsional) File gambar produk baru jika ingin diganti
  *               kategori_id:
  *                 type: string
  *                 format: uuid
+ *                 description: (Opsional) ID kategori baru
  *     responses:
  *       200:
  *         description: Produk berhasil diperbarui
@@ -116,10 +127,36 @@ export async function PUT(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = {};
-    if (nama_produk) data.nama_produk = nama_produk;
-    if (hargaStr !== null) data.harga = parseInt(hargaStr);
-    if (stokStr !== null) data.stok = parseInt(stokStr);
-    if (kategori_id_str !== null) data.kategori_id = kategori_id_str || null;
+    
+    if (nama_produk && nama_produk.trim() !== '') {
+      data.nama_produk = nama_produk;
+    }
+    
+    if (hargaStr && hargaStr.trim() !== '') {
+      const parsedHarga = parseInt(hargaStr);
+      if (!isNaN(parsedHarga)) {
+        data.harga = parsedHarga;
+      }
+    }
+    
+    if (stokStr && stokStr.trim() !== '') {
+      const parsedStok = parseInt(stokStr);
+      if (!isNaN(parsedStok)) {
+        data.stok_detail = {
+          upsert: {
+            create: { jumlah_stok: parsedStok },
+            update: { jumlah_stok: parsedStok }
+          }
+        };
+      }
+    }
+
+    if (kategori_id_str !== null) {
+      const trimmedKategoriId = kategori_id_str.trim();
+      if (trimmedKategoriId !== '') {
+        data.kategori_id = trimmedKategoriId;
+      }
+    }
 
     if (gambarFile && gambarFile.size > 0) {
       const arrayBuffer = await gambarFile.arrayBuffer();
@@ -152,8 +189,12 @@ export async function PUT(
 
     return NextResponse.json({ success: true, data: produk }, { status: 200 });
   } catch (error: any) {
+    console.error("=== ERROR DI PUT PRODUK ===", error);
     if (error.code === 'P2025') {
       return NextResponse.json({ success: false, message: 'Produk not found' }, { status: 404 });
+    }
+    if (error.code === 'P2003' && error.meta?.constraint === 'produk_kategori_id_fkey') {
+      return NextResponse.json({ success: false, message: 'Kategori ID yang dimasukkan tidak ditemukan di database' }, { status: 400 });
     }
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }

@@ -38,7 +38,7 @@ export async function GET(
     const transaksi = await prisma.transaksi.findUnique({
       where: { id },
       include: {
-        users: {
+        user: {
           select: {
             nama: true,
             email: true,

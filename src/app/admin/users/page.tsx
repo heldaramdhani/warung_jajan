@@ -51,14 +51,16 @@ export default function UsersPage() {
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
 
-  const handleAction = (action: 'edit' | 'add', user?: UserItem) => {
+  const handleAction = (action: 'edit' | 'add' | 'delete', user?: UserItem) => {
     if (action === 'add') {
       setIsAddOpen(true);
-    } else if (action === 'edit' && user) {
+    } else if (user) {
       setSelectedUser(user);
-      setIsEditOpen(true);
+      if (action === 'edit') setIsEditOpen(true);
+      if (action === 'delete') setIsDeleteOpen(true);
     }
   };
 
@@ -71,6 +73,11 @@ export default function UsersPage() {
   const submitEditUser = (updatedUser: UserItem) => {
     setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
     setIsEditOpen(false);
+  };
+
+  const submitDeleteUser = (id: string) => {
+    setUsers(users.filter(u => u.id !== id));
+    setIsDeleteOpen(false);
   };
 
   return (
@@ -86,6 +93,9 @@ export default function UsersPage() {
         setIsEditOpen={setIsEditOpen} 
         selectedUser={selectedUser} 
         submitEditUser={submitEditUser} 
+        isDeleteOpen={isDeleteOpen}
+        setIsDeleteOpen={setIsDeleteOpen}
+        submitDeleteUser={submitDeleteUser}
       />
     </div>
   );
